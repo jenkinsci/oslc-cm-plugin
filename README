@@ -5,10 +5,17 @@ having OSLC support, using Oauth and REST.
 It also allows some user interaction mode to create bugs using an
 OSLC-CM provider's delegated creation dialog.
 
-For more details of the OSLC protocol, see
-http://open-services.net/bin/view/Main/CmHome
+For more details of the OSLC (Open Services for Lifecycle Collaboration) 
+protocol, see  http://open-services.net/bin/view/Main/CmHome
+
+This program is (c) Copyright 2011 Madhumita Dhar & Institut Telecom.
+
+It was developped in the frame of the COCLICO project with financial 
+support of its funders.
+
+It depends on the http://code.google.com/p/oauth-signpost/ library.
 
 To rebuild the plugin, issue the following command in this directory :
  $ mvn package
 
--- Olivier Berger
+-- Olivier Berger, Madhumita Dhar

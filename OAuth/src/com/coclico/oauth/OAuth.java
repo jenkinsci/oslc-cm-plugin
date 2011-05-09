@@ -1,3 +1,6 @@
+
+// FIXME Missing copyright notice
+
 package com.coclico.oauth;
 
 import java.io.BufferedReader;
@@ -27,13 +30,14 @@ public class OAuth {
     		
     		prop.load(in);
 
-    		
     	} catch (IOException ex) {
     		ex.printStackTrace();
         }
     	
     	String consumer_key = prop.getProperty("CONSUMER_KEY");
 		String consumer_secret = prop.getProperty("CONSUMER_SECRET");
+
+		// The server endpoints
 		String request_token_url = prop.getProperty("REQUEST_TOKEN_URL");
 		String access_token_url = prop.getProperty("ACCESS_TOKEN_URL");
 		String authorisation_url = prop.getProperty("AUTHORISATION_URL");
@@ -69,7 +73,6 @@ public class OAuth {
 
         System.out.println("Access token: " + consumer.getToken());
         System.out.println("Token secret: " + consumer.getTokenSecret());
-    	       
-        
+
     }
 }
