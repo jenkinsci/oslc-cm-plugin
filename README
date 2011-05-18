@@ -1,3 +1,14 @@
-This plugin is an OSLC-CM consumer. On the occurence of a build failure, it allows automated creation of bug reports in bug trackers having OSLC support, using Oauth and REST.
+This plugin is an OSLC-CM consumer. On the occurence of a build
+failure, it allows automated creation of bug reports in bug trackers
+having OSLC support, using Oauth and REST.
 
-For more details of the OSLC protocol, see http://open-services.net/bin/view/Main/CmHome
+It also allows some user interaction mode to create bugs using an
+OSLC-CM provider's delegated creation dialog.
+
+For more details of the OSLC protocol, see
+http://open-services.net/bin/view/Main/CmHome
+
+To rebuild the plugin, issue the following command in this directory :
+ $ mvn package
+
+-- Olivier Berger
