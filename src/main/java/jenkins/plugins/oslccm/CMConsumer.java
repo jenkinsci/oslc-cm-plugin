@@ -221,8 +221,9 @@ public class CMConsumer extends Notifier {
 		if(manual)	{
 			consumer = new CommonsHttpOAuthConsumer(((DescriptorImpl) getDescriptor()).getConsumerKey(), ((DescriptorImpl) getDescriptor()).getConsumerSecret());
 	        consumer.setTokenWithSecret(getToken(), getTokenSecret());
+	        String absoluteBuildURL = ((DescriptorImpl) getDescriptor()).getUrl() + build.getUrl();
 			
-			OslccmBuildAction bAction = new OslccmBuildAction(build, uiUrl, this.width, this.height, consumer);
+			OslccmBuildAction bAction = new OslccmBuildAction(build, uiUrl, this.width, this.height, consumer, absoluteBuildURL);
 			build.addAction(bAction);
 			LOGGER.info("Adding delegated create action");
 		}
@@ -282,8 +283,6 @@ public class CMConsumer extends Notifier {
         request.setHeader("Accept", "application/json");
         request.setHeader("Content-Type","application/json");
         StringEntity body = new StringEntity(jsonbug);
-        //body.setContentType("application/json;charset=UTF-8");
-        //body.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE,"application/json;charset=UTF-8"));
         request.setEntity(body);        
 
         consumer.sign(request);
