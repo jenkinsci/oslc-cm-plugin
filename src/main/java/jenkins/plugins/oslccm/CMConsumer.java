@@ -281,7 +281,6 @@ public class CMConsumer extends Notifier {
     	
         HttpPost request = new HttpPost((getUrl()));
         request.setHeader("Accept", "application/json");
-        request.setHeader("Content-Type","application/json");
         StringEntity body = new StringEntity(jsonbug);
         request.setEntity(body);        
 
@@ -440,7 +439,8 @@ public class CMConsumer extends Notifier {
 			JSONObject auto = formData.getJSONObject("automatic");
 			LOGGER.info(auto.toString());
 			List<String> newProps = null;
-			if(auto.has("bugprops"))	{
+			
+			if((req.getParameter("automatic")!=null)&&(auto.has("bugprops")))	{
 				Object properties = auto.get("bugprops");
 				newProps = new ArrayList<String>();
 				//LOGGER.info(properties.toString());
