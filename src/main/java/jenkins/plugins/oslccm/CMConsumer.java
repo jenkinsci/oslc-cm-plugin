@@ -219,32 +219,11 @@ public class CMConsumer extends Notifier {
 		
 		String uiUrl = this.getDelegUrl();
 		if(manual)	{
-			OAuthConsumer consumer = new CommonsHttpOAuthConsumer(((DescriptorImpl) getDescriptor()).getConsumerKey(), ((DescriptorImpl) getDescriptor()).getConsumerSecret());	        
+			consumer = new CommonsHttpOAuthConsumer(((DescriptorImpl) getDescriptor()).getConsumerKey(), ((DescriptorImpl) getDescriptor()).getConsumerSecret());
 	        consumer.setTokenWithSecret(getToken(), getTokenSecret());
 	        String absoluteBuildURL = ((DescriptorImpl) getDescriptor()).getUrl() + build.getUrl();
-
-	        /*String uiUrl = this.getDelegUrl();
-
-	        try {
-		        HttpPost post = new HttpPost("http://fftrunk/plugins/oslc/cm/project/6/tracker/101/ui/creation");
-		        consumer.sign(post);
-		        String hdr = post.getFirstHeader("Authorization").getValue().substring(6).replace(", ", "&");
-		        uiUrl = uiUrl + "?" + hdr;
-	        	
-				//uiUrl = consumer.sign(this.getDelegUrl());
-				uiUrl = uiUrl.replace("oauth", "auth");
-				LOGGER.info("NEW URL: " + uiUrl);
-			} catch (OAuthMessageSignerException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (OAuthExpectationFailedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (OAuthCommunicationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}*/
-			OslccmBuildAction bAction = new OslccmBuildAction(build, this.getDelegUrl(), this.width, this.height, consumer, absoluteBuildURL);
+			
+			OslccmBuildAction bAction = new OslccmBuildAction(build, uiUrl, this.width, this.height, consumer, absoluteBuildURL);
 			build.addAction(bAction);
 			LOGGER.info("Adding delegated create action");
 		}
@@ -304,8 +283,6 @@ public class CMConsumer extends Notifier {
         request.setHeader("Accept", "application/json");
         request.setHeader("Content-Type","application/json");
         StringEntity body = new StringEntity(jsonbug);
-        //body.setContentType("application/json;charset=UTF-8");
-        //body.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE,"application/json;charset=UTF-8"));
         request.setEntity(body);        
 
         consumer.sign(request);
