@@ -7,11 +7,12 @@
     <version>1.399</version><!-- which version of Jenkins is this plugin built against? -->
   </parent>
 
-  <groupId>jenkins.plugins.oslccm</groupId>
   <artifactId>oslccm</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>hpi</packaging>
-
+  <name>Jenkins OSLC-CM plugin</name>
+  <description>An OSLC Change Management client for Jenkins which creates bug reports in remote bug trackers</description>
+  
   <!-- get every artifact through maven.glassfish.org, which proxies all the artifacts that we need -->
   <repositories>
     <repository>
@@ -27,10 +28,7 @@
     </pluginRepository>
   </pluginRepositories>
   
-  <name>OSLC-CM Consumer</name>
-	<description>Create automatic bug reports in remote bug trackers</description>
-	
-	<developers>
+  <developers>
 		<developer>
 			<id>mdhar</id>
 			<name>Madhumita DHAR</name>
@@ -38,9 +36,9 @@
 	</developers>
 	
 	<scm>
-		<connection>scm:git:ssh://github.com/jenkinsci/oslc-cm-plugin.git</connection>
-    	<developerConnection>scm:git:ssh://git@github.com:jenkinsci/oslc-cm-plugin.git</developerConnection>
-    	<url>https://github.com/jenkinsci/oslc-cm-plugin</url>
+		<connection>scm:git:ssh://github.com/jenkinsci/oslccm-plugin.git</connection>
+    	<developerConnection>scm:git:ssh://git@github.com:jenkinsci/oslccm-plugin.git</developerConnection>
+    	<url>https://github.com/jenkinsci/oslccm-plugin</url>
 	</scm>
 	
   <dependencies>
