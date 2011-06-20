@@ -90,7 +90,6 @@ public class CMConsumer extends Notifier {
 	private boolean defaultProps;
 	private OAuthConsumer consumer;
 	
-	//@DataBoundConstructor
 	public CMConsumer(String token, String tokenSecret, boolean manual, boolean automatic, String url, String delegUrl, String width, String height, boolean eachBuildFailure, boolean firstBuildFailure, List<String> newprops)	{
 		this.token = token;
 		this.tokenSecret = tokenSecret;
@@ -165,7 +164,7 @@ public class CMConsumer extends Notifier {
 	}
 	
 	/**
-     * for config.jelly
+     * to display pre-defined bug properties for automatic bug creation
      */
     public List<String> getBugprops() {
     	if(this.defaultProps)	return null;
@@ -201,7 +200,7 @@ public class CMConsumer extends Notifier {
 	public BuildStepMonitor getRequiredMonitorService() {
 		return BuildStepMonitor.BUILD;
 	}
-
+	
 	@Override
 	public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) {
 		LOGGER.info("Consumer Key: " + ((DescriptorImpl) getDescriptor()).getConsumerKey());
