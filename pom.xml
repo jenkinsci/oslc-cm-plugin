@@ -36,9 +36,9 @@
 	</developers>
 	
 	<scm>
-		<connection>scm:git:ssh://github.com/jenkinsci/oslc-cm-plugin.git</connection>
-    	<developerConnection>scm:git:ssh://git@github.com:jenkinsci/oslc-cm-plugin.git</developerConnection>
-    	<url>https://github.com/jenkinsci/oslc-cm-plugin</url>
+		<connection>scm:git:git://github.com/jenkinsci/oslc-cm-plugin.git</connection>
+    	<developerConnection>scm:git:git@github.com:jenkinsci/oslc-cm-plugin.git</developerConnection>
+    	<url>http://github.com/jenkinsci/oslc-cm-plugin</url>
 	</scm>
 	
   <dependencies>
