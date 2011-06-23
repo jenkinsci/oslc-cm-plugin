@@ -46,7 +46,7 @@ THE SOFTWARE.
 			  <f:entry title="or on the 1st of a series of failures?">
 		    	<f:checkbox name="firstBuildFailure" checked="${instance.firstBuildFailure}" />
 			  </f:entry> 
-			  <f:entry title="Json content for bug report" description="for more details, click on help (the '?' sign)" help="/plugin/oslccm/help-json-report.html">
+			  <f:entry title="Json content for bug report" description="for more details, click on help (the '?' sign)" help="/plugin/oslc-cm/help-json-report.html">
 			  
 			  	<f:repeatable name="bugprops" var="prop" items="${instance.bugprops}">
 			      <table width="100%">
