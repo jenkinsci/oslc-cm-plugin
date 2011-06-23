@@ -1,28 +1,29 @@
-/**
- * This file is (c) Copyright 2011 by Madhumita DHAR, Institut TELECOM
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+/*
+ * The MIT License
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * Copyright (c) 2011 Institut TELECOM, Madhumita DHAR, 
  * 
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
- *
- * This program has been developed in the frame of the COCLICO
- * project with financial support of its funders.
- *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  */
 
 package jenkins.plugins.oslccm;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -33,8 +34,6 @@ import java.util.logging.Logger;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONArray;
 
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -65,9 +64,6 @@ import org.kohsuke.stapler.QueryParameter;
 
 import oauth.signpost.OAuthConsumer;
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
-import oauth.signpost.exception.OAuthCommunicationException;
-import oauth.signpost.exception.OAuthExpectationFailedException;
-import oauth.signpost.exception.OAuthMessageSignerException;
 
 
 public class CMConsumer extends Notifier {
@@ -183,20 +179,6 @@ public class CMConsumer extends Notifier {
 		}
 	}
 	
-	private static String createTinyUrl(String url) throws IOException {
-		org.apache.commons.httpclient.HttpClient client = new org.apache.commons.httpclient.HttpClient();
-		GetMethod gm = new GetMethod("http://tinyurl.com/api-create.php?url="
-				+ url.replace(" ", "%20"));
-
-		int status = client.executeMethod(gm);
-		if (status == HttpStatus.SC_OK) {
-			return gm.getResponseBodyAsString();
-		} else {
-			throw new IOException("Error in tinyurl: " + status);
-		}
-
-	}
-
 	public BuildStepMonitor getRequiredMonitorService() {
 		return BuildStepMonitor.BUILD;
 	}
@@ -217,10 +199,11 @@ public class CMConsumer extends Notifier {
 		LOGGER.info("On first failure: " + firstBuildFailure);
 		
 		String uiUrl = this.getDelegUrl();
+		consumer = new CommonsHttpOAuthConsumer(((DescriptorImpl) getDescriptor()).getConsumerKey(), ((DescriptorImpl) getDescriptor()).getConsumerSecret());
+        consumer.setTokenWithSecret(getToken(), getTokenSecret());
+        
 		if(manual)	{
-			consumer = new CommonsHttpOAuthConsumer(((DescriptorImpl) getDescriptor()).getConsumerKey(), ((DescriptorImpl) getDescriptor()).getConsumerSecret());
-	        consumer.setTokenWithSecret(getToken(), getTokenSecret());
-	        String absoluteBuildURL = ((DescriptorImpl) getDescriptor()).getUrl() + build.getUrl();
+			String absoluteBuildURL = ((DescriptorImpl) getDescriptor()).getUrl() + build.getUrl();
 			
 			OslccmBuildAction bAction = new OslccmBuildAction(build, uiUrl, this.width, this.height, consumer, absoluteBuildURL);
 			build.addAction(bAction);
@@ -241,14 +224,9 @@ public class CMConsumer extends Notifier {
 	private String createBugReport(AbstractBuild<?, ?> build) {
 		String projectName = build.getProject().getName();
 		String result = build.getResult().toString();
-		String tinyUrl = "";
 		String absoluteBuildURL = ((DescriptorImpl) getDescriptor()).getUrl() + build.getUrl();
-		try {
-			tinyUrl = createTinyUrl(absoluteBuildURL);
-		} catch (Exception e) {
-			tinyUrl = "?";
-		}
-		return String.format("%s:%s $%d (%s)", projectName, result, build.number, tinyUrl);
+		
+		return String.format("%s:%s $%d (%s)", projectName, result, build.number, absoluteBuildURL);
 	}
 	
 	public void sendReport(String message) throws Exception {
@@ -277,12 +255,15 @@ public class CMConsumer extends Notifier {
         
         String jsonbug = js.toString();
         LOGGER.info("Report: " + jsonbug);
+    	LOGGER.info("URL: " + getUrl());
     	
         HttpPost request = new HttpPost((getUrl()));
-        request.setHeader("Accept", "application/json");
+        //request.setHeader("Accept", "application/json");
+        request.setHeader("Content-Type", "application/json");
         StringEntity body = new StringEntity(jsonbug);
         request.setEntity(body);        
 
+        
         consumer.sign(request);
         LOGGER.info(request.getFirstHeader("Authorization").getValue());
         LOGGER.info(consumer.sign(getUrl()));
@@ -290,16 +271,20 @@ public class CMConsumer extends Notifier {
         LOGGER.info("Sending bug report to Fusionforge...");
         
         HttpClient httpClient = new DefaultHttpClient();
-        HttpResponse response = httpClient.execute(request);
+        try	{
+        	HttpResponse response = httpClient.execute(request);
+        	
+        	LOGGER.info("Response: " + response.getStatusLine().getStatusCode() + " "
+		            + response.getStatusLine().getReasonPhrase());
+		    
+		    //System.out.println("Response: " + response.getEntity().getContent().toString());
+		    //response.getEntity().writeTo(LOGGER);
+		    LOGGER.info(EntityUtils.toString(response.getEntity()));
+        }catch(Exception e)	{
+        	LOGGER.log(Level.SEVERE, "Automatic bug creation failed!", e);
+        }
 
-        /*System.out.println("Response: " + response.getStatusLine().getStatusCode() + " "
-                + response.getStatusLine().getReasonPhrase());*/
-        LOGGER.info("Response: " + response.getStatusLine().getStatusCode() + " "
-                + response.getStatusLine().getReasonPhrase());
         
-        //System.out.println("Response: " + response.getEntity().getContent().toString());
-        //response.getEntity().writeTo(LOGGER);
-        LOGGER.info(EntityUtils.toString(response.getEntity()));
 
 		
 	}
@@ -465,7 +450,6 @@ public class CMConsumer extends Notifier {
 				newProps = null;
 			}
 			
-			//return super.newInstance(req, formData);
 			LOGGER.info("new Instance");
 			return new CMConsumer(	
 					req.getParameter("token"),
