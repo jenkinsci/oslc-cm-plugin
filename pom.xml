@@ -8,7 +8,7 @@
   </parent>
 
   <artifactId>oslc-cm</artifactId>
-  <version>1.2-SNAPSHOT</version>
+  <version>1.1-SNAPSHOT</version>
   <packaging>hpi</packaging>
   <name>OSLC CM Plugin</name>
   <description>An OSLC Change Management client/consumer which creates bug reports in remote bug trackers</description>
@@ -32,6 +32,7 @@
 		<developer>
 			<id>mdhar</id>
 			<name>Madhumita DHAR</name>
+			<email>mdhar@free.fr</email>
 		</developer>
 	</developers>
 	
