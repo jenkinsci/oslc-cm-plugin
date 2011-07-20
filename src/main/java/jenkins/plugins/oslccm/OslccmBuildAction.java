@@ -27,6 +27,7 @@ package jenkins.plugins.oslccm;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Random;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import java.net.HttpURLConnection;
@@ -56,13 +57,15 @@ public class OslccmBuildAction implements Action {
 	private String width;
 	private String height;
 	private String Ourl;
+	private String oauthUrl;
 	//private String name;
 	private OAuthConsumer consumer;
 	private String buildUrl;
 	
-	public OslccmBuildAction(AbstractBuild<?, ?> build, String delegUrl, int width, int height, OAuthConsumer consumer, String absoluteBuildURL) {
+	public OslccmBuildAction(AbstractBuild<?, ?> build, String delegUrl, String oauthUrl, int width, int height, OAuthConsumer consumer, String absoluteBuildURL) {
 		this.build = build;
 		Ourl = delegUrl;
+		this.oauthUrl = oauthUrl;
 		this.width = width + "";
 		this.height = height + "";
 		LOGGER.info("New buid action added with url: " + url + ", width:" + width + ", height:" + height);
@@ -79,19 +82,28 @@ public class OslccmBuildAction implements Action {
 		LOGGER.info("Old url: " + Ourl);
         url = Ourl;
         try {
-        	url = url + "?build_url=" + this.buildUrl + "&build_number=" + this.getBuild().number;
-			url = consumer.sign(url);
-        	LOGGER.info("Signed url: " + url);
+        	if(url.indexOf("?")>0) {
+        		url = url + "&build_url=" + this.buildUrl + "&build_number=" + this.getBuild().number;
+        	}else {
+        		url = url + "?build_url=" + this.buildUrl + "&build_number=" + this.getBuild().number;
+        	}
+			if(this.oauthUrl==null) {
+				url = consumer.sign(url);
+			}else {
+				String tempUrl = consumer.sign(this.oauthUrl);
+				int index = tempUrl.indexOf("?");
+				String oauthParams = consumer.sign(this.oauthUrl).substring(index+1);
+				url = url + "&" + oauthParams;
+			}
+			
+			LOGGER.info("Signed url: " + url);
 			return url;
 		} catch (OAuthMessageSignerException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			LOGGER.log(Level.SEVERE, "The url could not be signed!", e1);
 		} catch (OAuthExpectationFailedException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			LOGGER.log(Level.SEVERE, "The url could not be signed!", e1);
 		} catch (OAuthCommunicationException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			LOGGER.log(Level.SEVERE, "The url could not be signed!", e1);
 		}
         
 		return url;

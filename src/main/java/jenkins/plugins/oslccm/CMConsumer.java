@@ -76,6 +76,7 @@ public class CMConsumer extends Notifier {
 	private boolean automatic;
 	private String url;
 	private String delegUrl;
+	private String oauthUrl;
 	private boolean eachBuildFailure;
 	private boolean firstBuildFailure;
 	private int width;
@@ -86,13 +87,18 @@ public class CMConsumer extends Notifier {
 	private boolean defaultProps;
 	private OAuthConsumer consumer;
 	
-	public CMConsumer(String token, String tokenSecret, boolean manual, boolean automatic, String url, String delegUrl, String width, String height, boolean eachBuildFailure, boolean firstBuildFailure, List<String> newprops)	{
+	public CMConsumer(String token, String tokenSecret, boolean manual, boolean automatic, String url, String delegUrl, String oauthUrl, String width, String height, boolean eachBuildFailure, boolean firstBuildFailure, List<String> newprops)	{
 		this.token = token;
 		this.tokenSecret = tokenSecret;
 		this.manual = manual;
 		this.automatic = automatic;
 		this.url = url;
-		this.delegUrl = delegUrl;		
+		this.delegUrl = delegUrl;
+		if(oauthUrl.trim().isEmpty()) {
+			this.oauthUrl = null;
+		}else {
+			this.oauthUrl = oauthUrl;
+		}
 		this.width = isInteger(width, WIDTH);
 		this.height = isInteger(height, HEIGHT);
 		this.eachBuildFailure = eachBuildFailure;
@@ -151,6 +157,10 @@ public class CMConsumer extends Notifier {
 		return delegUrl;
 	}
 	
+	public String getOauthUrl()	{
+		return oauthUrl;
+	}
+	
 	public int getWidth()	{
 		return width;
 	}
@@ -193,6 +203,7 @@ public class CMConsumer extends Notifier {
 		LOGGER.info("Automatic: " + automatic);
 		LOGGER.info("URL: " + url);
 		LOGGER.info("Delegated URL: " + delegUrl);
+		LOGGER.info("OAuth URL: " + oauthUrl);
 		LOGGER.info("Delegated URL width: " + width);
 		LOGGER.info("Delegated URL height: " + height);
 		LOGGER.info("On every failure: " + eachBuildFailure);
@@ -205,7 +216,7 @@ public class CMConsumer extends Notifier {
 		if(manual)	{
 			String absoluteBuildURL = ((DescriptorImpl) getDescriptor()).getUrl() + build.getUrl();
 			
-			OslccmBuildAction bAction = new OslccmBuildAction(build, uiUrl, this.width, this.height, consumer, absoluteBuildURL);
+			OslccmBuildAction bAction = new OslccmBuildAction(build, uiUrl, this.oauthUrl, this.width, this.height, consumer, absoluteBuildURL);
 			build.addAction(bAction);
 			LOGGER.info("Adding delegated create action");
 		}
@@ -264,10 +275,12 @@ public class CMConsumer extends Notifier {
         request.setEntity(body);        
 
         
-        consumer.sign(request);
-        LOGGER.info(request.getFirstHeader("Authorization").getValue());
-        LOGGER.info(consumer.sign(getUrl()));
-
+        try {
+        	consumer.sign(request);
+        }catch(Exception e)	{
+        	LOGGER.log(Level.SEVERE, "The url could not be signed!", e);
+        }
+        
         LOGGER.info("Sending bug report to Fusionforge...");
         
         HttpClient httpClient = new DefaultHttpClient();
@@ -458,6 +471,7 @@ public class CMConsumer extends Notifier {
 					req.getParameter("automatic")!=null,
 					req.getParameter("url"),
 					req.getParameter("delegUrl"),
+					req.getParameter("oauthUrl"),
 					req.getParameter("width"),
 					req.getParameter("height"),
 					req.getParameter("eachBuildFailure")!=null,

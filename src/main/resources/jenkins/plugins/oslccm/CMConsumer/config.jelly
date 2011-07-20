@@ -71,6 +71,9 @@ THE SOFTWARE.
 		      <f:entry title="Delegated Bug Creation URL">
 		        <f:textbox name="delegUrl" value="${instance.delegUrl}"/>
 		      </f:entry>
+		      <f:entry title="OAuth URL" help="/plugin/oslc-cm/help-oauth-url.html">
+		        <f:textbox name="oauthUrl" value="${instance.oauthUrl}"/>
+		      </f:entry>
 		      <f:entry title="Delegated Creation Window Width">
 		        <f:textbox name="width" value="${instance.width}"/>
 		      </f:entry>
