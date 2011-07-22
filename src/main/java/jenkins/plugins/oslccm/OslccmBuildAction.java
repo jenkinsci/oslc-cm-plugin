@@ -93,6 +93,7 @@ public class OslccmBuildAction implements Action {
 				String tempUrl = consumer.sign(this.oauthUrl);
 				int index = tempUrl.indexOf("?");
 				String oauthParams = consumer.sign(this.oauthUrl).substring(index+1);
+				oauthParams = oauthParams.replaceAll("oauth_", "auth_");
 				url = url + "&" + oauthParams;
 			}
 			
